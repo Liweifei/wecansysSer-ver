@@ -34,6 +34,20 @@ var dbInstance={
             cb(result);
         })
     },
+    deleteOne: function (collectionName, whereStr, cb) {//插入一条数据
+        //连接到表
+        console.log(whereStr)
+        var collection = thisDb.collection(collectionName);
+        //删除数据
+        collection.deleteOne(whereStr, function (err, result) {
+            if (err) {
+                throw err;
+                cb(false);
+                return;
+            }
+            cb(true);
+        });
+    },
 }
 
 module.exports = dbInstance;

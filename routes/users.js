@@ -12,6 +12,17 @@ router.post('/save', function(req, res, next) {
   	}
 });
 
+/* remove user. */
+router.post('/delete', function(req, res, next) {
+    if (req.body.name) {
+        let whereStr={'name':req.body.name};
+        dbTool.deleteOne(collectionName,whereStr,function(result){
+            var msg=result?'删除成功！':'删除失败！';
+            res.send(msg);
+        })
+    }
+});
+
 /* get user list. */
 router.get('/list', function(req, res, next) {
 	dbTool.findAll(collectionName,function(result){
