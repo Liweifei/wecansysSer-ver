@@ -22,6 +22,25 @@ var dbInstance={
             cb(true);
         });
     },
+    findOne: function (collectionName, whereStr, cb) {//查询一条数据
+        //连接到表
+        var collection = thisDb.collection(collectionName);
+        // 查数据
+        collection.find(whereStr).toArray(function (err, result) {
+            if (err) {
+                console.log('Error:' + err);
+                return;
+            }else{
+                console.log(result,"长度"+result.length)
+                if (result.length<1) {
+                    cb(false);
+                }else{
+                   cb(result[0]); 
+                }
+                
+            }
+        })
+    },
     findAll: function (collectionName, cb) {//插入一条数据
         //连接到表
         var collection = thisDb.collection(collectionName);
@@ -48,7 +67,7 @@ var dbInstance={
             cb(true);
         });
     },
-    updateOne: function (collectionName, whereStr, updateStr, cb) {//删除一条数据
+    updateOne: function (collectionName, whereStr, updateStr, cb) {//更新一条数据
         //连接到表
         var collection = thisDb.collection(collectionName);
         //更新数据

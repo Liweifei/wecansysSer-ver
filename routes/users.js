@@ -6,10 +6,17 @@ var collectionName="users";
 /* save user. */
 router.post('/save', function(req, res, next) {
   	if (req.body.name && req.body.password) {
-  		dbTool.insertOne(collectionName,req.body,function(result){
-  			var msg=result?'添加成功！':'添加失败！';
-  			res.send(msg);
-  		})
+        dbTool.findOne(collectionName,{"name":req.body.name},function(resons){
+            if (!!resons) {
+                res.send("账户已存在！");
+            }else{
+                dbTool.insertOne(collectionName,req.body,function(result){
+                    var msg=result?'添加成功！':'添加失败！';
+                    res.send(msg);
+                })
+            }
+        })
+  		
   	}
 });
 
