@@ -19,6 +19,7 @@ var dbInstance={
             	cb(false);
             	return;
             }
+            console.warn(result)
             cb(true);
         });
     },
@@ -48,9 +49,10 @@ var dbInstance={
         collection.find().toArray(function (err, result) {
             if (err) {
                 console.log('Error:' + err);
+                cb(false,err)
                 return;
             }
-            cb(result);
+            cb(true,result);
         })
     },
     deleteOne: function (collectionName, whereStr, cb) {//删除一条数据
