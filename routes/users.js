@@ -11,7 +11,9 @@ router.post('/save', function(req, res, next) {
             if (!!resons) {
                 res.json(jsonTool.justCodeInt(false,"账号已存在！"))
             }else{
-                dbTool.insertOne(collectionName,req.body,function(result){
+                let data=req.body;
+                data.createDate=new Date();
+                dbTool.insertOne(collectionName,data,function(result){
                     var msg=result?'添加成功！':'添加失败！';
                     res.json(jsonTool.justCodeInt(result,msg))
                 })

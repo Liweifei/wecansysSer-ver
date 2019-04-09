@@ -7,6 +7,7 @@ var dbTool = require("./public/dbTool/dbTool");
 
 var indexRouter = require('./routes/index');
 var users = require('./routes/users');
+var navMenu = require('./routes/navMenu');
 
 var app = express();
 //解决头信息跨域
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/user', users);
+app.use('/navMenu', navMenu);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
