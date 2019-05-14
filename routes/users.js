@@ -11,7 +11,7 @@ router.post('/save', function(req, res, next) {
             if (!!resons) {
                 res.json(jsonTool.justCodeInt(false,"账号已存在！"))
             }else{
-                let data=req.body;
+                var data=req.body;
                 data.createDate=new Date();
                 dbTool.insertOne(collectionName,data,function(result){
                     var msg=result?'添加成功！':'添加失败！';
@@ -26,7 +26,7 @@ router.post('/save', function(req, res, next) {
 /* remove user. */
 router.post('/delete', function(req, res, next) {
     if (req.body._id) {
-        let whereStr={'_id':ObjectId(req.body._id)};
+        var whereStr={'_id':ObjectId(req.body._id)};
         dbTool.deleteOne(collectionName,whereStr,function(result){
             var msg=result?'删除成功！':'删除失败！';
             res.json(jsonTool.justCodeInt(result,msg))
@@ -37,8 +37,8 @@ router.post('/delete', function(req, res, next) {
 /* update psd. */
 router.post('/updatePsd', function(req, res, next) {
     if (req.body._id && req.body.password) {
-        let whereStr={'_id':ObjectId(req.body._id)};
-        let updateStr={$set:{"password":req.body.password}}
+        var whereStr={'_id':ObjectId(req.body._id)};
+        var updateStr={$set:{"password":req.body.password}}
         dbTool.updateOne(collectionName,whereStr,updateStr,function(result){
             var msg=result?'更改成功！':'更改失败！';
             res.json(jsonTool.justCodeInt(result,msg))
