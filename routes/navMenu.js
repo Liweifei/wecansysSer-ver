@@ -59,7 +59,7 @@ router.get('/list', function(req, res, next) {
                         }
                     }else{
                         obj={
-                            type:"group",
+                            type:"link",
                             data:[info[i]]
                         }
                     }

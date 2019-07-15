@@ -6,7 +6,7 @@ var logger = require('morgan');
 var dbTool = require("./public/dbTool/dbTool");
 
 var indexRouter = require('./routes/index');
-var users = require('./routes/users');
+var user = require('./routes/user');
 var navMenu = require('./routes/navMenu');
 
 var app = express();
@@ -17,6 +17,20 @@ app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
+// 设置跨域 详细
+// app.all('*', function (req, res, next) {
+//   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+//   res.header('Access-Control-Allow-Headers', 'Content-Type,Content-Length, Authorization,Origin,Accept,X-Requested-With');
+//   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.header('Access-Control-Allow-Credentials', true);
+//   res.header('X-Powered-By', ' 3.2.1');
+//   res.header('Content-Type', 'application/json;charset=utf-8');
+//   if (req.method === 'OPTIONS') {
+//       res.sendStatus(200);
+//   } else {
+//       next();
+//   }
+// });
 
 //connect db
 dbTool.connect();
@@ -32,7 +46,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/user', users);
+app.use('/user', user);
 app.use('/navMenu', navMenu);
 
 // catch 404 and forward to error handler

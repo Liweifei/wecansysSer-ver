@@ -57,7 +57,14 @@ router.get('/list', function(req, res, next) {
             res.json(jsonTool.justCodeInt(result,info))
         }
 	})
-  	
+});
+
+/* login api. */
+router.post('/login', function(req, res, next) {
+    console.log(req.body.name,req.body.psd)
+    var msg=(req.body.name=="admin" && req.body.psd=="20140606")?'登录成功！':'账号或密码不对！';
+    var type=(req.body.name=="admin" && req.body.psd=="20140606")?true:false;
+    res.json(jsonTool.justCodeInt(type,msg))
 });
 
 module.exports = router;
