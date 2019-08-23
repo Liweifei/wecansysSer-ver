@@ -13,10 +13,10 @@ var jsonInstance={
             msg:param
         }
     },
-    justCodeInt(type,msg){//仅返回success 或false  type=true/false  msg是返回信息
+    justCodeInt(type,msg,data){//仅返回success 或false  type=true/false  msg是返回信息
         return {
             type:type,
-            data:[],
+            data:data||[],
             msg:!!msg?msg:""
         }
     }
