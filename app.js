@@ -8,6 +8,7 @@ var dbTool = require("./public/dbTool/dbTool");
 var indexRouter = require('./routes/index');
 var user = require('./routes/user');
 var navMenu = require('./routes/navMenu');
+var upload = require('./routes/common/upload');
 
 var app = express();
 //解决头信息跨域
@@ -45,9 +46,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//图片上传文件静态资源访问
+app.use("/fileList",express.static(path.resolve(__dirname,"/fileList/wecansysServer")));//与文件上传的路径一直 再upload中设置
+
 app.use('/', indexRouter);
 app.use('/user', user);
 app.use('/navMenu', navMenu);
+app.use('/upload', upload);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

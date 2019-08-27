@@ -85,7 +85,7 @@ var dbInstance = {
     findAndSort: function (collectionName,sort, cb) {//查询所有数据然后进行排序
         //连接到表
         var collection = thisDb.collection(collectionName);
-        // 查数据
+        // 查数据 
         collection.find().sort(sort).toArray(function (err, result) {
             if (err) {
                 console.log('Error:' + err);
@@ -97,10 +97,9 @@ var dbInstance = {
     },
     deleteOne: function (collectionName, whereStr, cb) {//删除一条数据
         //连接到表
-        console.log(whereStr)
         var collection = thisDb.collection(collectionName);
         //删除数据
-        collection.remove(whereStr, function (err, result) {
+        collection.deleteOne(whereStr, function (err, result) {
             if (err) {
                 throw err;
                 cb(false);

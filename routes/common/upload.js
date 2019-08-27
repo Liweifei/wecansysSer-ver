@@ -1,21 +1,32 @@
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
-var dbTool = require("../public/dbTool/dbTool");
-var jsonTool = require("../public/jsonTool/jsonTool");
-var collectionName = "navMenu";
+var dbTool = require("../../public/dbTool/dbTool");
+var jsonTool = require("../../public/jsonTool/jsonTool");
+var fs = require('fs');
+var path = require('path');
+var multer = require('multer');
+var collectionName = "upload";
+var destination=path.resolve(__dirname, "/fileList/wecansysServer");//文件存放路径
 /* save nav. */
-router.post('/save', function (req, res, next) {
-    if (req.body.name && req.body.url) {
-        var data = req.body;
+var storage = multer.diskStorage({
+    destination: destination,
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "-" + file.originalname)
+    }
+})
+var upload = multer({ storage: storage });
+
+// 下面的file须和前端传过来的name相对应
+//单文件长传用single 也就是一个input==file，（注意，multiple和此无关）
+//多文件上传用array   upload.array('file', number) 这里的number也就是input=file 的个数==number，就比如说你传了五个file过来
+router.post('/save', upload.single('file'), function (req, res, next) {
+    if (req.file.filename) {
         var param = {
-            pid: req.body._id ? ObjectId(req.body._id) : null,
-            name: data.name,
-            url: data.url,
+            url: "http://" + req.headers.host + "/fileList/" + req.file.filename,
+            filename: req.file.filename,
             createDate: new Date(),
-            sort: new Date().getTime()
         }
-        //如果有id传过来就是其子元素
         dbTool.insertMany(collectionName, [param], function (result, data) {
             var msg = result ? '添加成功！' : '添加失败！';
             res.json(jsonTool.justCodeInt(result, msg, data))
@@ -23,14 +34,20 @@ router.post('/save', function (req, res, next) {
     }
 });
 
-/* remove nav. */
+/* delete nav. */
 router.post('/delete', function (req, res, xxx) {
-    if (req.body._id) {
-        var whereStr = { $or: [{ '_id': ObjectId(req.body._id) }, { 'pid': ObjectId(req.body._id) }] };
+    if (req.body._id && req.body.fileName) {
+        var whereStr = { '_id': ObjectId(req.body._id) };
         dbTool.deleteOne(collectionName, whereStr, function (result) {
-            var msg = result ? '删除成功！' : '删除失败！';
-            res.json(jsonTool.justCodeInt(result, msg))
+            fs.unlink(path.join(destination,"/"+req.body.fileName), function(err){
+                // 仅是回调处理而已
+                var msg = result ? '删除成功！' : '删除失败！';
+                res.json(jsonTool.justCodeInt(result, msg))
+            })
+            
         })
+    }else{
+        res.json(jsonTool.justCodeInt(false, "_id或path不能为空"))
     }
 });
 
@@ -82,55 +99,14 @@ router.post('/move', function (req, res, next) {
 
 /* get nav list. */
 router.get('/list', function (req, res, next) {
-    dbTool.findAndSort(collectionName, { sort: 1 }, function (result, info) {
+    dbTool.findAll(collectionName, function (result, info) {
         if (result) {
-            var data = formatList(info);
-            res.json(jsonTool.toArr(data))
+            res.json(jsonTool.toArr(info))
         } else {
             res.json(jsonTool.justCodeInt(result, info))
         }
     })
 
 });
-
-function formatList(arr) {
-    var data=[];
-    getParent();
-    getChild(data, arr);//匹配子元素
-    function getParent () {//先把最顶层元素先找出来
-        for (var i = 0; i < arr.length; i++) {
-            var item = arr[i];
-            if (!item.pid) {
-                item.children = [];
-                data.push(item);
-                arr.splice(i, 1);//找出来顶层元素后原数据删去相应的，就剩下是子元素
-                i--;
-            }
-        }
-    }
-    function getChild(datas, arrs) {
-        for (var i = 0; i < datas.length; i++) {
-            var pItem = datas[i];
-            for (var j = 0; j < arrs.length; j++) {//循环对比子元素一遍
-                var item = arrs[j];
-                if (JSON.stringify(item.pid) == JSON.stringify(pItem._id)) {//如果是这层的子元素，则加进去
-                    if (Array.isArray(pItem.children)) {
-                        pItem.children.push(item);
-                    } else {
-                        pItem.children = [item];
-                    }
-                    arrs.splice(j, 1);//再删去已经加处理好的子元素，最后剩下别的子/子子元素
-                    j--;
-                }
-            }
-            if (arrs.length > 0) {//如果发现再对比一次也发现还剩下元素
-                if (Array.isArray(pItem.children) && pItem.children.length > 0) {//如果有子元素，那就对比是否是子子元素，否则就循环外层的对比
-                    getChild(pItem.children, arrs)
-                }
-            }
-        }
-    }
-    return data;
-}
 
 module.exports = router;
